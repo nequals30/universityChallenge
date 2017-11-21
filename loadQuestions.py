@@ -11,7 +11,26 @@ organized into the type of question.
 
 import MySQLdb
 
-db = MySQLdb.connect(host="localhost",  # your host 
-                     user="root",       # username
-                     passwd="FAKEFORNOW",     # password
-                     db="universityChallenge")   # name of the database
+# Connect to the database -----------------------------------------------------
+fileMysqlConfig = open('mysqlInfo.config','r')
+mysqlInfo = fileMysqlConfig.readlines()
+
+cn = MySQLdb.connect(host='localhost',           # host 
+                     user=mysqlInfo[0].strip(),  # username
+                     passwd=mysqlInfo[1].strip(),# password
+                     db="universityChallenge")   # database
+
+cur = cn.cursor()
+fileMysqlConfig.close()
+
+# Go through and load all relevant text strings -------------------------------
+
+try:
+    cur.execute("insert into text(textString) values ('this is a test');")
+    cn.commit()
+except:
+    cn.rollback()
+    
+cn.close()
+
+print "yo dawg"
