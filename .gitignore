@@ -1,2 +1,4 @@
 # Ignored Types #
 *.vtt
+*.config
+*.txt
