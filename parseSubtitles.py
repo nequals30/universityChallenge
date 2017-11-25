@@ -12,11 +12,14 @@ youtube-dl https://www.youtube.com/watch?v=KT2Jsb3H7cI -x --sub-lang id --write-
 @author: nEquals30
 """
 
-# Part 1: Download the Episode ------------------------------------------------
+import MySQLdb
+from nltk import tokenize
+
+# Download the Episode --------------------------------------------------------
 # Implement Later:
 # https://stackoverflow.com/questions/18054500/how-to-use-youtube-dl-from-a-python-program
 
-# Part 2: Parse the VTT into a temporary stage file ---------------------------
+# Parse the VTT into a temporary stage file -----------------------------------
 episodeID = 'uc47_01'
 
 fin = open('vtt_files/' + episodeID + '.vtt','r')
@@ -27,8 +30,11 @@ isOn = False
 for line in fin.readlines():
     if isOn:
         if line[:2] != '00':
-            if "10 points" in line or "ten points" in line.lower():
-                fstage.write('\n---------------\n')
+#            if "10 points" in line or "ten points" in line.lower():
+#                fstage.write('\n\n')
+            line = line.replace('BUZZ','. ')
+            line = line.replace('BELL RINGS','. ')
+            line = line.replace('APPLAUSE','')
             fstage.write(line.strip() + ' ')
 
     if "first starter" in line:
@@ -40,18 +46,32 @@ for line in fin.readlines():
 fin.close()
 fstage.close()
 
-# Part 2: 
-from nltk import tokenize
+# Split into sentences and load into SQL --------------------------------------
 
-file_in = open(episodeID + '_stage.txt','r').read()
-fout = open('raw_files/' + episodeID + '.txt','w')
+file_in = open(episodeID + '_stage.txt','r')
+sentences_in = tokenize.sent_tokenize(file_in.read())
+file_in.close()
 
-sentences_in = tokenize.sent_tokenize(file_in)
+# Connect to SQL --------------------------------------------------------------
+fileMysqlConfig = open('mysqlInfo.config','r')
+mysqlInfo = fileMysqlConfig.readlines()
 
-for sentence in sentences_in:
-    if not '---------------' in sentence:
-        fout.write("[ ] ")
-    fout.write(sentence + '\n')
+cn = MySQLdb.connect(host='localhost',           # host 
+                     user=mysqlInfo[0].strip(),  # username
+                     passwd=mysqlInfo[1].strip(),# password
+                     db="universityChallenge")   # database
 
-fin.close()
-fout.close()
+cur = cn.cursor()
+fileMysqlConfig.close()
+
+# Load all sentences into SQL -------------------------------------------------
+
+for sentence in sentences_in:    
+    try:
+        cur.execute("insert into text(textString) values ('" + sentence + "');")
+        cn.commit()
+    except:
+        cn.rollback()
+cn.close()
+
+print('yo dawg')
