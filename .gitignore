@@ -2,3 +2,6 @@
 *.vtt
 *.config
 *.txt
+
+# Ignored Files #
+mysqlInfo.php

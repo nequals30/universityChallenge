@@ -30,11 +30,15 @@ isOn = False
 for line in fin.readlines():
     if isOn:
         if line[:2] != '00':
-#            if "10 points" in line or "ten points" in line.lower():
-#                fstage.write('\n\n')
+            if "10 points" in line or "ten points" in line.lower():
+                fstage.write('NEXT QUESTION')
+            
             line = line.replace('BUZZ','. ')
             line = line.replace('BELL RINGS','. ')
             line = line.replace('APPLAUSE','')
+            line = line.replace('THEY WHISPER','')
+            line = line.replace('THEY CONFER QUIETLY','')
+            line = line.replace('THEY CONFER','')
             fstage.write(line.strip() + ' ')
 
     if "first starter" in line:
@@ -65,10 +69,19 @@ cur = cn.cursor()
 fileMysqlConfig.close()
 
 # Load all sentences into SQL -------------------------------------------------
+try:
+    cur.execute("delete from stageText;")
+    cn.commit()
+except:
+    cn.rollback()
 
-for sentence in sentences_in:    
+question = 1
+for sentence in sentences_in:
+    if "NEXT QUESTION" in sentence:
+        sentence = sentence.replace("NEXT QUESTION","")
+        question = question + 1
     try:
-        cur.execute("insert into text(textString) values ('" + sentence + "');")
+        cur.execute("insert into stageText(textString,questionNumGuess) values ('" + sentence + "'," + str(question) + ");")
         cn.commit()
     except:
         cn.rollback()
