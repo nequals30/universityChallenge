@@ -81,10 +81,12 @@ for sentence in sentences_in:
         sentence = sentence.replace("NEXT QUESTION","")
         question = question + 1
     try:
-        cur.execute("insert into stageText(textString,questionNumGuess) values ('" + sentence + "'," + str(question) + ");")
+        q = "insert into stageText(textString,questionNumGuess) values (%s,%s)"
+        cur.execute(q,(sentence,str(question)))
+        #cur.execute("insert into stageText(textString,questionNumGuess) values ('" + sentence + "'," + str(question) + ");")
         cn.commit()
     except:
         cn.rollback()
 cn.close()
 
-print('yo dawg')
+print('COMPLETED')
