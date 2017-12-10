@@ -67,9 +67,10 @@ for i in range(1,max(allQtbl['qNum']) + 1):
     for sq in range(1,6):
         for pt in range(0,5):
             if not thisTbl[np.logical_and(thisTbl.pt==pt,thisTbl.sq==sq)].empty:
-                s = thisTbl[np.logical_and(thisTbl.pt==pt,thisTbl.sq==sq)].textStr.str.cat(sep=' ')
-                # if sq in (2,3,4) remove periods and question marks
-                cur.execute(q,(season,episode,i,sq,pt,s))
+                thisStr = thisTbl[np.logical_and(thisTbl.pt==pt,thisTbl.sq==sq)].textStr.str.cat(sep=' ')
+                if (pt in (2,3,4)) and (thisStr[len(thisStr)-1] in (".","?")):
+                    thisStr = thisStr[0:(len(thisStr)-1)]
+                cur.execute(q,(season,episode,i,sq,pt,thisStr))
 
     cn.commit()
 

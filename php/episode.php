@@ -1,35 +1,55 @@
+<html>
+
+<head>
+<style>
+body {font-family: "Arial";}
+th, td {padding: 15px;}
+</style>
+
+<body>
+
 <?php
 echo "<h2>Season " . $_GET["s"] . ", Episode " . $_GET["e"] . "</h2><hr/>";
 
 require 'conn.php';
 
 $q = "select question,question.subQuestion,question.phraseType,phraseText from question " .
-//	"left join question_infoSubQuestion on (question.subQuestion = question_infoSubQuestion.subQuestion) " .
 	"where season=" . $_GET["s"] . " and episode=" . $_GET["e"] . " " .
-//	"and question_infoSubQuestion.description='bonus intro'";
 	"order by question,subQuestion,phraseType";
 
 $allQs = mysqli_query($conn,$q);
 
-if (mysqli_num_rows($allQs) > 0) {
-	echo '<table><tr><th>Q#</th><th>Question</th><th>Incorrect Answer</th><th>Correct Answer</th></tr>';
+$color_start = "#98d2e2";
+$color_bonusIntro = "#fffa84";
+
+$nResults = mysqli_num_rows($allQs);
+
+if ($nResults > 0) {
+	$counter = 0;
+	echo '<table style="padding: 15px"><tr><th>Q#</th><th>Question</th><th>Incorrect Answer</th><th>Correct Answer</th></tr>';
 	$prevSQ = 0;
 	$prevQ = 0;
 	$thisQuestion = '';
 	$thisRight = '';
 	$thisWrong = '';
 	while ($row = mysqli_fetch_assoc($allQs)){
-		if (($row["subQuestion"] != $prevSQ) or ($row["question"] != $prevQ)) {
+		$counter++;
+		if (($row["subQuestion"] != $prevSQ) or ($row["question"] != $prevQ) or ($counter == $nResults)) {
 			// Print question and reset variables
 			if ($thisQuestion != ''){
-				echo '<tr><td>' . $prevQ . '</td>' .
+				if ($prevSQ==1) {
+					echo '<tr style="background-color: ' . $color_start . '">';
+				} else {
+				       	echo '<tr>'; 
+				}
+				echo '<td>' . $prevQ . '</td>' .
 				     '<td>' . $thisQuestion . '</td>' .
 				     '<td>' . $thisWrong . '</td>' .
 				     '<td>' . $thisRight . '</td>' .
 				     '</tr>';
 			}
 			if ($row["subQuestion"] == 2){
-				echo '<tr style="background-color:yellow"><td colspan="4">' .
+				echo '<tr style="background-color:' . $color_bonusIntro . '"><td colspan="4">' .
 					$row["phraseText"] . '</td></tr>';
 			}
 			$thisQuestion = '';
@@ -50,5 +70,6 @@ if (mysqli_num_rows($allQs) > 0) {
 } else {
 	echo "Missing data for this episode.";
 }
-
 ?>
+</body>
+</html>
