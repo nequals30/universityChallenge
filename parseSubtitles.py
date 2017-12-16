@@ -7,7 +7,6 @@ Created on Sun Oct 22 18:22:04 2017
 * Parses the VTT subtitles into a format organized by line
 
 youtube-dl https://www.youtube.com/watch?v=iGYq1TC708A -x --sub-lang id --write-sub --skip-download
-youtube-dl https://www.youtube.com/watch?v=KT2Jsb3H7cI -x --sub-lang id --write-sub --skip-download
 
 @author: nEquals30
 """
@@ -20,7 +19,7 @@ from nltk import tokenize
 # https://stackoverflow.com/questions/18054500/how-to-use-youtube-dl-from-a-python-program
 
 # Parse the VTT into a temporary stage file -----------------------------------
-episodeID = 'uc47_01'
+episodeID = 'uc47_03'
 
 fin = open('vtt_files/' + episodeID + '.vtt','r')
 fstage = open(episodeID + '_stage.txt','w')

@@ -2,6 +2,7 @@
 *.vtt
 *.config
 *.txt
+*.sql
 
 # Ignored Files #
 mysqlInfo.php
