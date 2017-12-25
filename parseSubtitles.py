@@ -6,7 +6,7 @@ Created on Sun Oct 22 18:22:04 2017
 * Downloads VTT subtitles from youtube for a given episode
 * Parses the VTT subtitles into a format organized by line
 
-youtube-dl https://www.youtube.com/watch?v=iGYq1TC708A -x --sub-lang id --write-sub --skip-download
+youtube-dl https://www.youtube.com/watch?v=PHd7omTGCwY -x --sub-lang id --write-sub --skip-download
 
 @author: nEquals30
 """
@@ -19,7 +19,7 @@ from nltk import tokenize
 # https://stackoverflow.com/questions/18054500/how-to-use-youtube-dl-from-a-python-program
 
 # Parse the VTT into a temporary stage file -----------------------------------
-episodeID = 'uc47_03'
+episodeID = 'uc47_09'
 
 fin = open('vtt_files/' + episodeID + '.vtt','r')
 fstage = open(episodeID + '_stage.txt','w')
@@ -38,6 +38,10 @@ for line in fin.readlines():
             line = line.replace('THEY WHISPER','')
             line = line.replace('THEY CONFER QUIETLY','')
             line = line.replace('THEY CONFER','')
+            line = line.replace('THEY GROAN','')
+            line = line.replace('LAUGHTER','')
+            line = line.replace('OK.','')
+            line = line.replace('...','. ')
             fstage.write(line.strip() + ' ')
 
     if "first starter" in line:
