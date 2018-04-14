@@ -6,7 +6,7 @@ Created on Sun Oct 22 18:22:04 2017
 * Downloads VTT subtitles from youtube for a given episode
 * Parses the VTT subtitles into a format organized by line
 
-youtube-dl https://www.youtube.com/watch?v=PHd7omTGCwY -x --sub-lang id --write-sub --skip-download
+youtube-dl https://www.youtube.com/watch?v=RFmfduxrDNg -x --sub-lang id --write-sub --skip-download
 
 @author: nEquals30
 """
@@ -19,7 +19,7 @@ from nltk import tokenize
 # https://stackoverflow.com/questions/18054500/how-to-use-youtube-dl-from-a-python-program
 
 # Parse the VTT into a temporary stage file -----------------------------------
-episodeID = 'uc47_09'
+episodeID = 'uc47_19'
 
 fin = open('vtt_files/' + episodeID + '.vtt','r')
 fstage = open(episodeID + '_stage.txt','w')
@@ -42,6 +42,7 @@ for line in fin.readlines():
             line = line.replace('LAUGHTER','')
             line = line.replace('OK.','')
             line = line.replace('...','. ')
+            line = line.replace('</c>','. ')
             fstage.write(line.strip() + ' ')
 
     if "first starter" in line:
@@ -71,6 +72,14 @@ cn = MySQLdb.connect(host='localhost',           # host
 cur = cn.cursor()
 fileMysqlConfig.close()
 
+# Try to predict the category -------------------------------------------------
+cats = [0] * len(sentences_in)
+for i in range(0,len(sentences_in)):
+    sentences_in[i] = sentences_in[i].replace('..','')
+    if "correct" in sentences_in[i].lower():
+        cats[i-1] = 2
+    
+
 # Load all sentences into SQL -------------------------------------------------
 try:
     cur.execute("delete from stageText;")
@@ -79,17 +88,19 @@ except:
     cn.rollback()
 
 question = 1
+i = 0
 for sentence in sentences_in:
     if "NEXT QUESTION" in sentence:
         sentence = sentence.replace("NEXT QUESTION","")
         question = question + 1
     try:
-        q = "insert into stageText(textString,questionNumGuess) values (%s,%s)"
-        cur.execute(q,(sentence,str(question)))
+        q = "insert into stageText(textString,questionNumGuess,cat) values (%s,%s,%s)"
+        cur.execute(q,(sentence,str(question),str(cats[i])))
         #cur.execute("insert into stageText(textString,questionNumGuess) values ('" + sentence + "'," + str(question) + ");")
         cn.commit()
     except:
         cn.rollback()
+    i = i + 1
 cn.close()
 
 print('COMPLETED')

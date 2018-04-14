@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 
 season = 47
-episode = 9
+episode = 19
 
 # Connect to SQL ------------- ------------------------------------------------
 fileMysqlConfig = open('mysqlInfo.config','r')
