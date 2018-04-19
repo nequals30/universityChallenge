@@ -19,7 +19,7 @@ from nltk import tokenize
 # https://stackoverflow.com/questions/18054500/how-to-use-youtube-dl-from-a-python-program
 
 # Parse the VTT into a temporary stage file -----------------------------------
-episodeID = 'uc47_19'
+episodeID = 'uc47_20'
 
 fin = open('vtt_files/' + episodeID + '.vtt','r')
 fstage = open(episodeID + '_stage.txt','w')
@@ -78,7 +78,23 @@ for i in range(0,len(sentences_in)):
     sentences_in[i] = sentences_in[i].replace('..','')
     if "correct" in sentences_in[i].lower():
         cats[i-1] = 2
-    
+    if "no, it" in sentences_in[i].lower():
+        cats[i-1] = 3
+        cats[i] = 2
+    if "firstly" in sentences_in[i].lower():
+        cats[i] = 5
+    if "secondly" in sentences_in[i].lower():
+        cats[i] = 5
+    if "finally" in sentences_in[i].lower():
+        cats[i] = 5
+    if "bonus" in sentences_in[i].lower():
+        cats[i] = 4
+    if "10 points" in sentences_in[i].lower():
+        cats[i] = 1
+        cats[i+1] = 1
+    if "ten points" in sentences_in[i].lower():
+        cats[i] = 1
+        cats[i+1] = 1
 
 # Load all sentences into SQL -------------------------------------------------
 try:
